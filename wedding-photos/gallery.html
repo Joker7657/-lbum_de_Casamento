@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Galeria dos Noivos 💍</title>
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+<script src="firebase.js"></script>
+
+</head>
+<body class="bg-white">
+
+<div class="p-5 text-center">
+<h1 class="text-3xl text-rose-700">Galeria de Fotos 💕</h1>
+<p class="text-gray-500">Apenas para os noivos</p>
+</div>
+
+<div id="lock" class="text-center mt-10">
+<p class="text-gray-700">Digite a senha de acesso:</p>
+<input id="pass" type="password" class="border rounded p-2 mt-2">
+<button onclick="unlock()" class="bg-rose-600 text-white px-4 py-2 rounded ml-2">Entrar</button>
+<p class="text-sm text-gray-500 mt-2">Sugestão: defina a senha no código</p>
+</div>
+
+<div id="gallery" class="grid grid-cols-2 md:grid-cols-4 gap-2 p-4 hidden"></div>
+
+<script>
+const PASSWORD = "noivosfelizes";
+
+function unlock(){
+  if(document.getElementById("pass").value === PASSWORD){
+    document.getElementById("lock").style.display = "none";
+    document.getElementById("gallery").classList.remove("hidden");
+    loadPhotos();
+  } else {
+    alert("Senha incorreta");
+  }
+}
+
+// LOAD PHOTOS
+function loadPhotos(){
+  db.collection("photos").orderBy("createdAt","desc").onSnapshot(snap=>{
+    const gallery = document.getElementById("gallery");
+    gallery.innerHTML = "";
+    snap.forEach(doc=>{
+      const img = document.createElement("img");
+      img.src = doc.data().url;
+      img.className="rounded shadow";
+      gallery.appendChild(img);
+    })
+  });
+}
+</script>
+
+</body>
+</html>
