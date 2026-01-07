@@ -37,7 +37,7 @@ function unlock(){
 }
 
 async function loadPhotos(){
- let { data } = await supabase.from("photos").select("*").order("created_at",{ascending:false});
+ let { data } = await supabase.from("fotosCasamento").select("*").order("created_at",{ascending:false});
  const div = document.getElementById("gallery");
  div.innerHTML = "";
  data.forEach(p=>{

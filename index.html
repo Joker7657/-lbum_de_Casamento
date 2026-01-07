@@ -37,7 +37,7 @@
 
 <script>
 async function loadCounter() {
- let { data } = await supabase.from("photos").select("*");
+ let { data } = await supabase.from("fotosCasamento").select("*");
  document.getElementById("counter").innerText =
    `${data.length} fotos já enviadas 🎉`;
 }
@@ -67,7 +67,7 @@ document.getElementById("fileInput").addEventListener("change", async e => {
    .from("wedding_photos")
    .getPublicUrl(fileName);
 
- await supabase.from("photos").insert({ url: publicURL });
+ await supabase.from("fotosCasamento").insert({ url: publicURL });
 
  document.getElementById("msg").innerText = "Foto enviada com sucesso 💖";
  loadCounter();
