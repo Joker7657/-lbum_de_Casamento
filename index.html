@@ -25,7 +25,14 @@
 <label class="block cursor-pointer">
     <input type="file" accept="image/*" capture="environment" id="photoInput" hidden>
     <div class="bg-rose-600 hover:bg-rose-700 text-white py-3 rounded-lg font-semibold">
-        📷 Enviar foto do casamento
+        📷 Tirar foto do casamento
+    </div>
+</label>
+
+<label class="block cursor-pointer mt-4">
+    <input type="file" accept="image/*" id="galleryInput" hidden>
+    <div class="bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold">
+        📁 Escolher da galeria
     </div>
 </label>
 
@@ -61,6 +68,51 @@ db.collection("photos").onSnapshot(snap=>{
 
 // UPLOAD
 document.getElementById("photoInput").addEventListener("change", async function(e){
+    const file = e.target.files[0];
+    if(!file) return;
+
+    if(!file.type.startsWith("image/")){
+        alert("Envie apenas imagens!");
+        return;
+    }
+
+    if(file.size > 5 * 1024 * 1024){
+        alert("Imagem muito grande! Máximo 5MB");
+        return;
+    }
+
+    const progressContainer = document.getElementById("progressContainer");
+    const bar = document.getElementById("uploadBar");
+    const status = document.getElementById("status");
+
+    progressContainer.classList.remove("hidden");
+
+    const fileName = "wedding_" + Date.now() + ".jpg";
+    const ref = storage.ref("wedding_photos/" + fileName);
+    const uploadTask = ref.put(file);
+
+    uploadTask.on("state_changed", snapshot=>{
+        let percent = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        bar.style.width = percent + "%";
+        bar.innerText = Math.round(percent) + "%";
+    },
+    err=>{
+        status.innerText = "Erro ao enviar 😢";
+    },
+    ()=>{
+        uploadTask.snapshot.ref.getDownloadURL().then(url=>{
+            db.collection("photos").add({
+                url,
+                createdAt: new Date()
+            });
+
+            status.innerText = "Obrigado pela sua foto! 💖";
+            bar.style.width = "0%";
+        });
+    });
+});
+
+document.getElementById("galleryInput").addEventListener("change", async function(e){
     const file = e.target.files[0];
     if(!file) return;
 
